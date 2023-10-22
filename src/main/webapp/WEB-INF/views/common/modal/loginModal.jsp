@@ -163,7 +163,7 @@
 
     const kakaoLogin = () => {
         Kakao.Auth.authorize({
-            redirectUri: 'http://ec2-13-236-136-119.ap-southeast-2.compute.amazonaws.com:8080/studycafe/kakaoLogin',
+            redirectUri: 'http://ec2-3-25-175-38.ap-southeast-2.compute.amazonaws.com:8080/studycafe/kakaoLogin',
             state: 'userme',
         })
     }
@@ -171,7 +171,7 @@
     let naverLogin = new naver.LoginWithNaverId(
         {
             clientId: "ZYWm89BXkPPOMY9OsjWn",
-            callbackUrl: "http://ec2-13-236-136-119.ap-southeast-2.compute.amazonaws.com:8080/studycafe/naverLogin",
+            callbackUrl: "http://ec2-3-25-175-38.ap-southeast-2.compute.amazonaws.com:8080/studycafe/naverLogin",
             isPopup: false,
         }
     );

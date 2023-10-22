@@ -55,7 +55,7 @@
             data: {
                 "grant_type": "authorization_code",
                 "client_id": '9f70b50c5675182dd2979ee77f24d9cd',
-                "redirect_uri": 'http://ec2-13-236-136-119.ap-southeast-2.compute.amazonaws.com:8080/studycafe/kakaoLogin',
+                "redirect_uri": 'http://ec2-3-25-175-38.ap-southeast-2.compute.amazonaws.com:8080/studycafe/kakaoLogin',
                 "code": getParameterByName('code')
             },
             success: function (data) {
