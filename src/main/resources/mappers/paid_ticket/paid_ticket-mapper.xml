@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.payid_ticket.model.mapper.PaidTicketMapper">
+
+    <resultMap id="PaidTicketListResultMap" type="PaidTicket">
+        <id property="id" column="ID"/>
+        <result property="end_date" column="END_DATE"/>
+        <result property="no" column="NO"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="time" column="TIME"/>
+        <result property="start_date" column="START_DATE"/>
+        <result property="ticket_name" column="TICKET_NAME"/>
+    </resultMap>
+
+    <resultMap id="UserResultMap" type="com.sss.studycafe.user.model.vo.User">
+        <id property="id" column="USER_ID"/>
+        <result property="email" column="EMAIL"/>
+    </resultMap>
+
+    <select id="selectUsageDateSeat" resultMap="PaidTicketListResultMap">
+        SELECT ID,
+        NO,
+        END_DATE,
+        START_DATE,
+        TICKET_NAME,
+        USER_ID
+        FROM PAID_TICKET
+        WHERE END_DATE >= CURDATE()
+    </select>
+
+    <select id="selectUserPaidTickets" resultMap="PaidTicketListResultMap">
+        SELECT pt.ID,
+        pt.NO,
+        pt.END_DATE,
+        pt.START_DATE,
+        pt.TICKET_NAME,
+        pt. TIME,
+        pt.USER_ID
+        FROM PAID_TICKET pt
+        INNER JOIN User u ON (pt.USER_ID = u.id)
+        WHERE (pt.END_DATE >= CURDATE() or pt.TIME > 0)
+        AND u.id = #{userId};
+    </select>
+
+    <select id="findRoomScheduleByDate" resultMap="PaidTicketListResultMap">
+        SELECT ID, NO, END_DATE, START_DATE, TICKET_NAME, USER_ID
+        FROM PAID_TICKET
+        WHERE (NO = #{seat})
+        AND DATE(START_DATE) = #{date};
+    </select>
+
+    <select id="findUsageLockers" resultType="_int">
+        SELECT NO
+        FROM PAID_TICKET
+        WHERE NO>900 AND END_DATE >= CURDATE()
+    </select>
+
+    <insert id="insert" parameterType="PaidTicket" useGeneratedKeys="true" keyColumn="ID" keyProperty="id">
+        INSERT INTO PAID_TICKET (
+        END_DATE,
+        START_DATE,
+        TICKET_NAME,
+        USER_ID,
+        NO,
+        TIME
+        ) VALUES (
+        #{end_date},
+        #{start_date},
+        #{ticket_name},
+        #{userId},
+        #{no},
+        #{time}
+        )
+    </insert>
+
+    <select id="findByUserIdAndTicketName" resultMap="PaidTicketListResultMap">
+        SELECT *
+        FROM PAID_TICKET
+        WHERE USER_ID = #{userId}
+        AND TICKET_NAME LIKE CONCAT('%', #{ticketName}, '%')
+        AND END_DATE >= CURDATE();
+    </select>
+
+    <select id="getAllTimeByUserId" resultType="_int">
+        SELECT SUM(TIME)
+        FROM PAID_TICKET
+        WHERE USER_ID=#{id}
+    </select>
+
+    <update id="updateRecentTime" parameterType="Map">
+        UPDATE PAID_TICKET
+        SET TIME=TIME-#{min}
+        WHERE USER_ID=#{id} AND NO=0
+        LIMIT 1
+    </update>
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.own_coupon.model.mapper.OwnCouponMapper">
+    <resultMap id="OwnCouponResultMap" type="OwnCoupon">
+        <id property="id" column="ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="createdate" column="CREATEDATE"/>
+        <result property="expiredate" column="EXPIREDATE"/>
+        <result property="status" column="STATUS"/>
+        <result property="name" column="NAME"/>
+        <result property="couponId" column="COUPONID"/>
+
+        <association property="user" resultMap="UserResultMap"/>
+        <association property="coupon" resultMap="CouponResultMap"/>
+    </resultMap>
+
+    <resultMap id="UserResultMap" type="com.sss.studycafe.user.model.vo.User">
+        <id property="id" column="USER_ID"/>
+        <result property="email" column="EMAIL"/>
+    </resultMap>
+
+    <resultMap id="CouponResultMap" type="com.sss.studycafe.coupon.model.vo.Coupon">
+        <id property="id" column="COUPON_ID"/>
+        <result property="name" column="COUPON_NAME"/>
+        <result property="discount" column="COUPON_DISCOUNT"/>
+        <result property="expiredate" column="COUPON_EXPIREDATE"/>
+    </resultMap>
+
+    <select id="selectOwnCouponWithUserAndCoupon" resultMap="OwnCouponResultMap">
+        SELECT
+                OC.ID,
+                OC.USER_ID,
+                OC.CREATEDATE,
+                OC.EXPIREDATE,
+                OC.STATUS,
+                OC.NAME,
+                OC.COUPONID,
+                U.ID AS USER_ID,
+                C.ID AS COUPON_ID,
+                U.EMAIL,
+                U.PASSWORD,
+                U.NAME,
+                U.PHONE,
+                U.IMAGE,
+                U.ROLE,
+                U.NICKNAME,
+                U.STATUS AS USER_STATUS,
+                U.MILEAGE,
+                U.CREATEDATE AS USER_CREATEDATE,
+                U.UPDATEDATE,
+                U.RELEASEDATE,
+                C.NAME AS COUPON_NAME,
+                C.DISCOUNT AS COUPON_DISCOUNT,
+                C.EXPIREDATE AS COUPON_EXPIREDATE
+        FROM OWN_COUPON OC
+        JOIN User U ON OC.USER_ID = U.ID
+        JOIN COUPON C ON OC.COUPONID = C.ID
+        WHERE OC.USER_ID = #{userId} AND OC.COUPONID = #{couponId}
+    </select>
+
+    <select id="selectOwnCouponByUserId" resultMap="OwnCouponResultMap">
+        SELECT
+            OC.ID,
+            OC.USER_ID,
+            OC.CREATEDATE,
+            OC.EXPIREDATE,
+            OC.STATUS,
+            OC.NAME,
+            OC.COUPONID,
+            U.ID AS USER_ID,
+            C.ID AS COUPON_ID,
+            C.NAME AS COUPON_NAME,
+            C.DISCOUNT AS COUPON_DISCOUNT,
+            C.EXPIREDATE AS COUPON_EXPIREDATE
+        FROM OWN_COUPON OC
+        JOIN User U ON OC.USER_ID = U.ID
+        JOIN COUPON C ON OC.COUPONID = C.ID
+        WHERE OC.USER_ID = #{userId}
+        AND OC.EXPIREDATE >= NOW();
+    </select>
+
+    <update id="useCoupon" parameterType="Map">
+        UPDATE OWN_COUPON
+        SET EXPIREDATE=NOW()
+        WHERE USER_ID=#{userId} AND NAME=#{coupon}
+    </update>
+
+    <insert id="insertCouponForNewUser" parameterType="map">
+        INSERT INTO OWN_COUPON (USER_ID, COUPONID, CREATEDATE, EXPIREDATE, STATUS, NAME)
+        VALUES (
+        #{newUserId},
+        1,
+        CONVERT_TZ(NOW(), 'UTC', 'Asia/Seoul'),
+        CONVERT_TZ(DATE_ADD(NOW(), INTERVAL 30 DAY), 'UTC', 'Asia/Seoul'),
+        'Y',
+        '신규회원 할인쿠폰'
+        )
+    </insert>
+</mapper>

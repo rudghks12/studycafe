@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.Customer.model.mapper.FaqMapper">
+    <sql id="FaqListSql">
+        SELECT NO,
+        TITLE,
+        KIND,
+        CONTENT,
+        STATUS
+        FROM FAQ
+        WHERE STATUS = 'Y'
+    </sql>
+
+    <resultMap id="FaqListResultMap" type="com.sss.studycafe.Customer.model.vo.Faq">
+        <id property="no" column="NO"></id>
+        <result property="title" column="TITLE"></result>
+        <result property="kind" column="KIND"></result>
+        <result property="content" column="CONTENT"></result>
+        <result property="status" column="STATUS"></result>
+    </resultMap>
+
+<!--    <select id="selectFaqCount" resultType="_int">-->
+<!--        SELECT COUNT(*) FROM FAQ WHERE STATUS = 'Y'-->
+<!--    </select>-->
+
+    <!-- 카테고리별 FAQ 조회 -->
+    <select id="getFaqByKind" resultMap="FaqListResultMap">
+        <include refid="FaqListSql"/>
+        AND KIND = #{kind}
+        ORDER BY NO ASC
+    </select>
+
+    <!-- 다른 SQL 쿼리들도 필요한 경우 정의 -->
+    <select id="getAllFaq" resultMap="FaqListResultMap">
+        <include refid="FaqListSql"/>
+        ORDER BY NO ASC
+    </select>
+
+
+</mapper>
+
+
+
+
+

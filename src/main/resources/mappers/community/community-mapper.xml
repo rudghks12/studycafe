@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.community.model.mapper.CommunityMapper">
+    <sql id="communitySql">
+        SELECT C.NO,
+               C.USERID,
+               C.KIND,
+               C.TITLE,
+               C.CONTENT,
+               C.CREATE_DATE,
+               C.UPDATE_DATE,
+               C.STATUS,
+               U.ID,
+               U.IMAGE,
+               U.EMAIL,
+               U.NICKNAME,
+               U.STATUS,
+        (SELECT COUNT(*) FROM COMMENT WHERE COMMUNITY_NO = C.NO) AS comment_cnt,
+        (SELECT COUNT(*) FROM `LIKE` WHERE COMMUNITY_NO = C.NO AND STATUS = 'Y') AS like_cnt
+        FROM COMMUNITY C
+        INNER JOIN User U ON (C.USERID = U.ID)
+        WHERE C.STATUS = 'Y'
+    </sql>
+
+    <resultMap id="communityResultMap" type="Community">
+        <id property="no" column="NO"></id>
+        <result property="userId" column="USERID"></result>
+        <result property="kind" column="KIND"></result>
+        <result property="title" column="TITLE"></result>
+        <result property="content" column="CONTENT"></result>
+        <result property="createdDate" column="CREATE_DATE"></result>
+        <result property="updatedDate" column="UPDATE_DATE"></result>
+        <result property="status" column="STATUS"></result>
+        <result property="comment_cnt" column="comment_cnt"></result>
+        <result property="like_cnt" column="like_cnt"></result>
+
+        <association property="user" resultMap="UserResultMap"/>
+    </resultMap>
+
+    <resultMap id="UserResultMap" type="com.sss.studycafe.user.model.vo.User">
+        <id property="id" column="ID"></id>
+        <result property="image" column="IMAGE"></result>
+        <result property="email" column="EMAIL"></result>
+        <result property="nickname" column="NICKNAME"></result>
+        <result property="status" column="STATUS"></result>
+    </resultMap>
+
+    <!-- 메인페이지 -->
+    <!-- 전체 게시글 수 조회 -->
+    <select id="selectCommunityCount" resultType="int" >
+        SELECT COUNT(*) FROM COMMUNITY WHERE STATUS = 'Y'
+    </select>
+
+    <!-- 전체 게시글 조회   -->
+    <select id="selectAll" resultMap="communityResultMap">
+        <include refid="communitySql" />
+        ORDER BY CREATE_DATE DESC
+    </select>
+
+    <!-- 메인페이지 정렬  -->
+    <!-- 인기순  -->
+    <select id ="selectAllByPopular" resultMap ="communityResultMap">
+        <include refid="communitySql" />
+        ORDER BY (SELECT COUNT(*) FROM `LIKE` L WHERE L.COMMUNITY_NO = C.NO AND L.STATUS = 'Y') DESC, C.NO DESC
+    </select>
+
+    <!-- 추천순  -->
+    <select id ="selectAllByRecommend" resultMap ="communityResultMap">
+        <include refid="communitySql" />
+        ORDER BY (
+        SELECT COUNT(*) FROM COMMENT CM WHERE CM.COMMUNITY_NO = C.NO AND CM.STATUS = 'Y'
+        ) DESC,
+        C.NO DESC
+    </select>
+
+    <!-- 오래된순  -->
+    <select id ="selectAllByOldest" resultMap ="communityResultMap">
+        <include refid="communitySql" />
+        ORDER BY C.CREATE_DATE ASC, C.NO DESC
+    </select>
+
+
+    <!-- 리스트페이지 -->
+    <!-- 게시판 종류에 따른 게시글 수 조회 -->
+    <select id="selectCommunityCountByKind" resultType="int" >
+        SELECT COUNT(*) FROM COMMUNITY WHERE STATUS = 'Y' AND KIND = #{kind}
+    </select>
+
+    <!-- 게시판 종류에 따른 전체 게시글 조회   -->
+    <select id="selectCommunityListByKind" resultMap="communityResultMap">
+        <include refid="communitySql" />
+        AND KIND = #{kind}
+        ORDER BY CREATE_DATE DESC
+    </select>
+
+    <!-- 리스트페이지 정렬  -->
+    <!-- 인기순  -->
+    <select id ="selectCommunityListByKindAndPopular" resultMap ="communityResultMap">
+        <include refid="communitySql" />
+        AND KIND = #{kind}
+        ORDER BY (SELECT COUNT(*) FROM `LIKE` L WHERE L.COMMUNITY_NO = C.NO AND L.STATUS = 'Y') DESC, C.NO DESC
+    </select>
+
+    <!-- 추천순  -->
+    <select id ="selectCommunityListByKindAndRecommend" resultMap ="communityResultMap">
+        <include refid="communitySql" />
+        AND KIND = #{kind}
+        ORDER BY (
+        SELECT COUNT(*) FROM COMMENT CM WHERE CM.COMMUNITY_NO = C.NO AND CM.STATUS = 'Y'
+        ) DESC,
+        C.NO DESC
+    </select>
+
+    <!-- 오래된순  -->
+    <select id ="selectCommunityListByKindAndOldest" resultMap ="communityResultMap">
+        <include refid="communitySql" />
+        AND KIND = #{kind}
+        ORDER BY C.CREATE_DATE ASC, C.NO DESC
+    </select>
+
+    <!-- 검색페이지 -->
+    <!-- 전체 게시글 수 (검색필터적용) -->
+    <select id="selectCommunityCountByKeyword" resultType="int" >
+        SELECT COUNT(*) FROM COMMUNITY WHERE STATUS = 'Y'
+        AND (TITLE LIKE CONCAT('%', #{keyword}, '%') OR CONTENT LIKE CONCAT('%', #{keyword}, '%'))
+        ORDER BY NO DESC
+    </select>
+
+    <!-- 현재 페이지에 표시할 게시글 목록을 가져옴(검색필터적용)  -->
+    <select id="selectAllByKeyword" resultMap="communityResultMap" parameterType="map">
+        <include refid="communitySql" />
+        AND (TITLE LIKE CONCAT('%', #{keyword}, '%') OR CONTENT LIKE CONCAT('%', #{keyword}, '%'))
+        ORDER BY NO DESC
+    </select>
+
+    <!-- 검색필터 정렬  -->
+    <!-- 인기순  -->
+    <select id="selectAllByKeywordAndPopular" resultMap="communityResultMap" parameterType="map">
+        <include refid="communitySql" />
+        AND (TITLE LIKE CONCAT('%', #{keyword}, '%') OR CONTENT LIKE CONCAT('%', #{keyword}, '%'))
+        ORDER BY (SELECT COUNT(*) FROM `LIKE` L WHERE L.COMMUNITY_NO = C.NO AND L.STATUS = 'Y') DESC, C.NO DESC
+    </select>
+
+    <!-- 추천순  -->
+    <select id="selectAllByKeywordAndRecommend" resultMap="communityResultMap" parameterType="map">
+        <include refid="communitySql" />
+        AND (TITLE LIKE CONCAT('%', #{keyword}, '%') OR CONTENT LIKE CONCAT('%', #{keyword}, '%'))
+        ORDER BY (
+        SELECT COUNT(*) FROM COMMENT CM WHERE CM.COMMUNITY_NO = C.NO AND CM.STATUS = 'Y'
+        ) DESC,
+        C.NO DESC
+    </select>
+
+    <!-- 오래된순  -->
+    <select id="selectAllByKeywordAndOldest" resultMap="communityResultMap" parameterType="map">
+        <include refid="communitySql" />
+        AND (TITLE LIKE CONCAT('%', #{keyword}, '%') OR CONTENT LIKE CONCAT('%', #{keyword}, '%'))
+        ORDER BY C.CREATE_DATE ASC, C.NO DESC
+    </select>
+
+
+    <!-- 게시글 상세페이지  -->
+    <select id="selectCommunityByNo"  resultMap="communityResultMap">
+        <include refid="communitySql" />
+        AND NO = #{no}
+    </select>
+
+    <!-- 게시글 등록  -->
+    <insert id="insertCommunity" parameterType="Community" useGeneratedKeys="true" keyProperty="no">
+        INSERT INTO COMMUNITY (USERID,
+                               KIND,
+                               TITLE,
+                               CONTENT,
+                               CREATE_DATE,
+                               UPDATE_DATE,
+                               STATUS
+        ) VALUES ( #{userId},
+                   #{kind},
+                   #{title},
+                   #{content},
+                   now(),
+                   now(),
+                   'Y'
+        )
+    </insert>
+
+    <!-- 게시물 수정    -->
+    <update id="updateCommunity" parameterType="Community">
+        UPDATE COMMUNITY
+        SET KIND = #{kind},
+        TITLE = #{title},
+        CONTENT = #{content},
+        UPDATE_DATE = SYSDATE
+        WHERE NO = #{no}
+    </update>
+
+
+    <!-- 게시글 삭제   -->
+    <update id="updateStatus" parameterType="map">
+        UPDATE COMMUNITY
+        SET
+        STATUS = #{status}
+        WHERE NO = #{no}
+    </update>
+
+
+    <resultMap id="likeResultMap" type="com.sss.studycafe.community.model.vo.Like">
+        <id property="no" column="NO" />
+        <result property="userid" column="USERID" />
+        <result property="community_no" column="COMMUNITY_NO" />
+        <result property="status" column="STATUS" />
+    </resultMap>
+
+
+    <!-- 좋아요 개수 조회 -->
+    <select id="selectLikeCount" resultType="int">
+        SELECT COUNT(*)
+        FROM `LIKE`
+        WHERE COMMUNITY_NO = #{community_no} AND STATUS = 'Y'
+    </select>
+
+    <!-- 좋아요 상태 확인 -->
+    <select id="likeCheck" resultMap="likeResultMap">
+        SELECT STATUS
+        FROM `LIKE`
+        WHERE USERID = #{userId} AND COMMUNITY_NO = #{communityNo}
+    </select>
+
+    <!-- 좋아요 상태 업데이트 -->
+    <update id="updateLikeStatus" parameterType="map">
+        UPDATE `LIKE`
+        SET STATUS = #{status}
+        WHERE USERID = #{userId} AND COMMUNITY_NO = #{communityNo}
+    </update>
+
+    <!-- 좋아요 추가 -->
+    <insert id="insertLike" parameterType="map">
+        INSERT INTO `LIKE` (USERID, COMMUNITY_NO, STATUS)
+        VALUES (#{userId}, #{communityNo}, #{status})
+    </insert>
+
+    <!-- 댓글 SQL  -->
+    <sql id="commentSql">
+        SELECT CM.NO,
+               CM.USERID,
+               CM.COMMUNITY_NO,
+               CM.CONTENT,
+               CM.STATUS,
+               CM.CREATE_DATE,
+               CM.UPDATE_DATE,
+               CM.REF,
+               CM.STEP,
+               CM.P_USERID,
+               C.NO,
+               U.ID,
+               U.IMAGE,
+               U.EMAIL,
+               U.NICKNAME,
+               U.STATUS
+        FROM  COMMENT CM
+        INNER JOIN User U ON (CM.USERID = U.ID)
+        INNER JOIN COMMUNITY C ON (CM.COMMUNITY_NO = C.NO)
+    </sql>
+
+    <resultMap id="commentResultMap" type="Comment">
+        <id property="no" column="NO"></id>
+        <result property="userId" column="USERID"></result>
+        <result property="community_no" column="COMMUNITY_NO"></result>
+        <result property="content" column="CONTENT"></result>
+        <result property="status" column="STATUS"></result>
+        <result property="createdDate" column="CREATE_DATE"></result>
+        <result property="updatedDate" column="UPDATE_DATE"></result>
+        <result property="ref" column="REF"></result>
+        <result property="step" column="STEP"></result>
+        <result property="p_userId" column="P_USERID"></result>
+
+        <association property="Community" resultMap="communityResultMap"/>
+        <association property="user" resultMap="UserResultMap"/>
+    </resultMap>
+
+    <!-- 댓글 개수 조회 -->
+    <select id="selectCommentCount" resultType="int">
+        SELECT COUNT(*)
+        FROM COMMENT
+        WHERE COMMUNITY_NO = #{community_no}
+    </select>
+
+    <!-- 댓글 리스트 조회 -->
+    <select id="selectCommentByNoAndStatus" resultMap="commentResultMap">
+        <include refid="commentSql" />
+        WHERE CM.COMMUNITY_NO = #{communityNo}
+        ORDER BY CM.REF ASC, CM.STEP ASC
+    </select>
+
+    <select id="selectCommentByNo" parameterType="Comment">
+        SELECT *
+        FROM COMMENT
+        WHERE NO = #{no}
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="insertComment" parameterType="Comment">
+        INSERT INTO COMMENT (USERID,
+                             COMMUNITY_NO,
+                             CONTENT,
+                             STATUS,
+                             CREATE_DATE,
+                             UPDATE_DATE,
+                             REF,
+                             STEP,
+                             P_USERID
+        ) VALUES ( #{userId},
+                   #{community_no},
+                   #{content},
+                   'Y',
+                   now(),
+                   now(),
+                   #{ref},
+                   #{step},
+                   #{p_userId}
+        )
+    </insert>
+
+    <!-- 커뮤니티별 최대 ref 값 조회 -->
+    <select id="selectCommunityMaxRef" resultType="java.lang.Integer">
+        SELECT MAX(REF)
+        FROM COMMENT
+        WHERE COMMUNITY_NO = #{communityNo}
+    </select>
+
+    <!-- 댓글 수정  -->
+    <update id="updateComment" parameterType="Comment">
+        UPDATE COMMENT
+        SET CONTENT=#{content},
+            UPDATE_DATE=now()
+        WHERE NO=#{no}
+    </update>
+
+    <!-- 댓글 삭제  -->
+    <update id="updateCommentStatus" parameterType="map" >
+        UPDATE COMMENT
+        SET
+        STATUS = #{status}
+        WHERE NO = #{no}
+    </update>
+
+</mapper>

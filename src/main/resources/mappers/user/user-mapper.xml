@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.user.model.mapper.UserMapper">
+    <sql id="selectUserSql">
+        SELECT ID,
+               EMAIL,
+               PASSWORD,
+               NAME,
+               PHONE,
+               IMAGE,
+               ROLE,
+               NICKNAME,
+               STATUS,
+               MILEAGE,
+               CREATEDATE,
+               UPDATEDATE,
+               RELEASEDATE
+        FROM User
+    </sql>
+
+    <sql id="selectUserAllSql">
+        SELECT U.ID,
+        U.EMAIL,
+        U.PASSWORD,
+        U.NAME,
+        U.PHONE,
+        U.IMAGE,
+        U.ROLE,
+        U.NICKNAME,
+        U.STATUS,
+        U.MILEAGE,
+        U.CREATEDATE,
+        U.UPDATEDATE,
+        U.RELEASEDATE,
+        (SELECT PT.NO
+        FROM PAID_TICKET PT
+        WHERE U.ID = PT.USER_ID AND PT.NO &lt; 900
+        AND (PT.NO != 401 AND NO != 435 AND NO != 457)
+        AND PT.END_DATE &gt; NOW()
+        ORDER BY PT.START_DATE DESC
+        LIMIT 1) as FIXED,
+        (SELECT PT.NO
+        FROM PAID_TICKET PT
+        WHERE U.ID = PT.USER_ID AND PT.NO > 900
+        AND PT.END_DATE > NOW()
+        ORDER BY PT.START_DATE DESC
+        LIMIT 1) as LOCKER
+        FROM User U
+    </sql>
+
+    <resultMap id="userResultMap" type="User" >
+        <id property="id" column="ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="image" column="IMAGE"/>
+        <result property="role" column="ROLE"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="status" column="STATUS"/>
+        <result property="mileage" column="MILEAGE"/>
+        <result property="createDate" column="CREATEDATE"/>
+        <result property="updateDate" column="UPDATEDATE"/>
+        <result property="releaseDate" column="RELEASEDATE"/>
+    </resultMap>
+
+    <resultMap id="userManageResultMap" type="User" >
+        <id property="id" column="ID"/>
+        <result property="email" column="EMAIL"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="image" column="IMAGE"/>
+        <result property="role" column="ROLE"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="status" column="STATUS"/>
+        <result property="mileage" column="MILEAGE"/>
+        <result property="fixed" column="FIXED"/>
+        <result property="locker" column="LOCKER"/>
+        <result property="createDate" column="CREATEDATE"/>
+        <result property="updateDate" column="UPDATEDATE"/>
+        <result property="releaseDate" column="RELEASEDATE"/>
+    </resultMap>
+
+    <select id="selectUserById" parameterType="string" resultMap="userResultMap">
+        <include refid="selectUserSql"/>
+        WHERE EMAIL=#{email} AND STATUS='Y'
+    </select>
+
+    <select id="selectUsers" resultMap="userManageResultMap">
+        <include refid="selectUserAllSql"/>
+    </select>
+
+    <select id="selectUsersByKeywordAndKind" resultMap="userResultMap" parameterType="map">
+        <include refid="selectUserAllSql"/>
+        WHERE ${kind} LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <select id="selectUsersCount" resultType="_int">
+        SELECT COUNT(*) FROM User
+    </select>
+
+    <select id="selectUsersCountByKeywordAndKind" parameterType="map" resultType="_int">
+        SELECT COUNT(*) FROM User
+        WHERE ${kind} LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <update id="releaseUsers" parameterType="java.util.List">
+        UPDATE User
+        SET
+            RELEASEDATE = null
+        WHERE ID IN
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="suspendUsers" parameterType="map">
+        UPDATE User
+        SET
+        RELEASEDATE = #{releaseDate, jdbcType=TIMESTAMP}
+        WHERE ID IN
+        <foreach item="item" collection="targetUsers" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyColumn="ID" keyProperty="id" >
+        INSERT INTO User (
+            ID,
+            EMAIL,
+            PASSWORD,
+            NAME,
+            PHONE,
+            NICKNAME
+        ) VALUES (
+            UUID(),
+            #{user.email},
+            #{user.password},
+            #{user.name},
+            #{user.phone},
+            #{user.nickname}
+        )
+    </insert>
+
+    <insert id="insertNeKaUser" parameterType="User" useGeneratedKeys="true" keyColumn="ID" keyProperty="id" >
+        INSERT INTO User (
+        ID,
+        EMAIL,
+        PASSWORD,
+        NAME,
+        PHONE,
+        IMAGE,
+        NICKNAME
+        ) VALUES (
+        UUID(),
+        #{user.email},
+        #{user.password},
+        #{user.name},
+        #{user.phone},
+        #{user.image},
+        #{user.nickname}
+        )
+    </insert>
+
+    <select id="checkEmailDuplicate" parameterType="string" resultType="_int">
+        SELECT COUNT(*) FROM User
+        WHERE EMAIL = #{email}
+    </select>
+
+    <select id="checkNicknameDuplicate" parameterType="string" resultType="_int">
+        SELECT COUNT(*) FROM User
+        WHERE NICKNAME = #{nickname}
+    </select>
+
+    <update id="updatePassword" parameterType="map">
+        UPDATE User
+        SET PASSWORD = #{newPassword}
+        WHERE EMAIL = #{email}
+    </update>
+
+    <update id="updateUserStatus" parameterType="string">
+        UPDATE User
+        SET STATUS = 'N'
+        WHERE EMAIL = #{email}
+    </update>
+
+    <update id="updateUserInfo" parameterType="map">
+        UPDATE User
+        SET
+        NICKNAME = #{nickname},
+        PHONE = #{phone}
+        WHERE
+        EMAIL = #{email}
+    </update>
+
+    <update id="changeUserImage" parameterType="map">
+        UPDATE User
+        SET IMAGE = #{imageUrl}
+        WHERE EMAIL = #{email}
+    </update>
+
+    <select id="findEmailByUsernameAndPhone" resultType="string" parameterType="map">
+        SELECT EMAIL
+        FROM User
+        WHERE NAME = #{name}
+        AND PHONE = #{phone}
+        AND STATUS = 'Y';
+    </select>
+
+    <select id="checkEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM User WHERE EMAIL = #{email}
+    </select>
+
+    <update id="resetPassword" parameterType="map">
+        UPDATE User
+        SET PASSWORD = #{newPassword}
+        WHERE EMAIL = #{email}
+    </update>
+
+    <update id="changeMileage" parameterType="map">
+        UPDATE User
+        SET MILEAGE = #{mileage}
+        WHERE EMAIL = #{email}
+    </update>
+</mapper>

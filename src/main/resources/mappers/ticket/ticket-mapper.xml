@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.ticket.model.mapper.TicketMapper">
+    <resultMap id="ticketResultMap" type="Ticket" >
+        <result property="name" column="NAME"/>
+        <result property="kind" column="KIND"/>
+        <result property="price" column="PRICE"/>
+        <result property="time" column="TIME"/>
+    </resultMap>
+
+    <select id="findByName" parameterType="string" resultMap="ticketResultMap">
+        SELECT * FROM TICKET
+        WHERE NAME=#{ticketName}
+    </select>
+</mapper>

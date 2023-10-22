@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.payment.model.mapper.PaymentMapper">
+    <select id="selectCount" resultType="_int">
+        SELECT COUNT(*) FROM PAYMENT
+    </select>
+
+    <resultMap id="paymentResultMap" type="Payment" >
+        <id property="id" column="ID"/>
+        <result property="cash" column="CASH"/>
+        <result property="card" column="CARD"/>
+        <result property="method" column="METHOD"/>
+        <result property="orderedAt" column="ORDEREDAT"/>
+        <result property="paidAt" column="PAIDAT"/>
+        <result property="ticket_id" column="TICKET_ID"/>
+        <result property="user_id" column="USER_ID"/>
+        <result property="ticketName" column="TICKET_NAME"/>
+        <result property="used_coupon" column="USED_COUPON"/>
+    </resultMap>
+
+    <select id="selectPayments" resultMap="paymentResultMap">
+        SELECT P.CASH,
+               P.PAIDAT,
+               T.TICKET_NAME
+        FROM PAYMENT P
+        JOIN PAID_TICKET T ON P.TICKET_ID = T.ID
+        ORDER BY P.PAIDAT DESC
+    </select>
+
+    <select id="selectPaymentsByBeforeThreeMonth" resultMap="paymentResultMap">
+        SELECT P.CASH,
+               P.PAIDAT,
+               T.TICKET_NAME
+        FROM PAYMENT P
+        JOIN PAID_TICKET T ON P.TICKET_ID = T.ID
+        WHERE P.PAIDAT >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+        ORDER BY P.PAIDAT DESC
+    </select>
+
+    <select id="selectPaymentsByUserId" resultMap="paymentResultMap" parameterType="string">
+        SELECT
+            P.ID,
+            P.CASH,
+            P.CARD,
+            P.METHOD,
+            P.ORDEREDAT,
+            P.PAIDAT,
+            T.TICKET_NAME
+        FROM PAYMENT P
+        JOIN PAID_TICKET T ON P.TICKET_ID = T.ID
+        WHERE P.USER_ID=#{userId}
+        ORDER BY P.PAIDAT DESC
+    </select>
+
+    <select id="selectCountByUserId" resultType="_int" parameterType="string">
+        SELECT COUNT(*) FROM PAYMENT
+        WHERE USER_ID=#{userId}
+    </select>
+
+    <select id="selectPaymentById" resultMap="paymentResultMap" parameterType="string">
+        SELECT
+            P.CASH,
+            P.CARD,
+            P.METHOD,
+            P.ORDEREDAT,
+            P.PAIDAT,
+            T.TICKET_NAME
+        FROM PAYMENT P
+        JOIN PAID_TICKET T ON P.TICKET_ID = T.ID
+        WHERE T.ID=#{id}
+    </select>
+
+    <insert id="insert" parameterType="Payment">
+        INSERT INTO PAYMENT (
+            ID,
+            CASH,
+            CARD,
+            METHOD,
+            ORDEREDAT,
+            PAIDAT,
+            TICKET_ID,
+            USER_ID,
+            USED_COUPON
+        ) VALUES (
+            #{id},
+            #{cash},
+            #{card},
+            #{method},
+            #{orderedAt},
+            #{paidAt},
+            #{ticket_id},
+            #{user_id},
+            #{used_coupon}
+        )
+    </insert>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sss.studycafe.Customer.model.mapper.NoticeMapper">
+    <sql id="NoticeListSql">
+        SELECT NO,
+        KIND,
+        TITLE,
+        CONTENT,
+        CREATE_DATE,
+        UPDATE_DATE,
+        STATUS
+        FROM NOTICE
+        WHERE STATUS = 'Y'
+
+    </sql>
+
+    <resultMap id="NoticeListResultMap" type="Notice">
+        <id property="no" column="NO"></id>
+        <result property="kind" column="KIND"></result>
+        <result property="title" column="TITLE"></result>
+        <result property="content" column="CONTENT"></result>
+        <result property="createDate" column="CREATE_DATE"></result>
+        <result property="updateDate" column="UPDATE_DATE"></result>
+        <result property="status" column="STATUS"></result>
+    </resultMap>
+
+    <!-- 게시물 수 조회   -->
+    <select id="selectNoticeCount" resultType="_int">
+        SELECT COUNT(*) FROM NOTICE WHERE STATUS = 'Y'
+    </select>
+
+    <!-- 모든 공지사항 조회 -->
+    <select id="getAllNotices" resultMap="NoticeListResultMap">
+        <include refid="NoticeListSql"/>
+<!--        ORDER BY NO DESC-->
+        ORDER BY CREATE_DATE DESC
+    </select>
+
+    <!--   상세페이지 불러오기      -->
+    <select id="getNoticeById" parameterType="int" resultMap="NoticeResultMap">
+        SELECT NO,
+        KIND,
+        TITLE,
+        CONTENT,
+        CREATE_DATE,
+        UPDATE_DATE,
+        STATUS
+        FROM NOTICE
+        WHERE NO = #{no}
+    </select>
+
+    <resultMap id="NoticeResultMap" type="Notice">
+        <id property="no" column="NO"></id>
+        <result property="kind" column="KIND"></result>
+        <result property="title" column="TITLE"></result>
+        <result property="content" column="CONTENT"></result>
+        <result property="createDate" column="CREATE_DATE"></result>
+        <result property="updateDate" column="UPDATE_DATE"></result>
+        <result property="status" column="STATUS"></result>
+    </resultMap>
+    <!--  밑에 는 글 작성하기 add -->
+    <insert id="insertNotice" parameterType="Notice">
+        <selectKey resultType="int" keyProperty="no" order="AFTER">
+            SELECT LAST_INSERT_ID() AS no
+        </selectKey>
+        INSERT INTO NOTICE (
+        KIND,
+        TITLE,
+        CONTENT,
+        CREATE_DATE,
+        UPDATE_DATE,
+        STATUS
+        ) VALUES (
+        #{kind},
+        #{title},
+        #{content},
+        SYSDATE,
+        SYSDATE,
+        'Y'
+        )
+    </insert>
+    <!-- 여기는 업데이트 및  삭제 -->
+    <update id="editNotice" parameterType="Notice">
+        UPDATE NOTICE
+        SET TITLE = #{title},
+        CONTENT = #{content},
+        KIND = #{kind},
+        UPDATE_DATE = SYSDATE
+        WHERE NO = #{no}
+    </update>
+
+    <!-- 공지사항 삭제 -->
+    <delete id="deleteNotice" parameterType="int">
+        UPDATE NOTICE
+        SET STATUS = 'N'
+        WHERE NO = #{noticeId}
+    </delete>
+
+
+
+
+
+</mapper>

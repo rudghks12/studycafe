@@ -1,0 +1,391 @@
+diff a/src/main/webapp/WEB-INF/views/common/header.jsp b/src/main/webapp/WEB-INF/views/common/header.jsp	(rejected hunks)
+@@ -16,271 +16,151 @@
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+-    <meta charset="utf-8" />
+-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+-    <meta name="description" content="" />
+-    <meta name="author" content="" />
+-    <title>Grayscale - Start Bootstrap Theme</title>
+-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+-    <!-- Font Awesome icons (free version)-->
+-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+-    <!-- Google fonts-->
+-    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+-    <!-- Core theme CSS (includes Bootstrap)-->
+-    <link href="css/styles.css" rel="stylesheet" />
+-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+-    <!-- Link Swiper's CSS -->
+-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
++
+ </head>
+ <style>
+-    /* 메인 네비게이션 바 (헤더) 스타일 */
+-    #mainNav {
+-        min-height: 3.5rem;
+-        background-color: #000000;
+-        position: fixed; /* 화면 위에 고정된 위치에 표시 */
++    nav {
++         /*border: 1px solid red;*/
++        width: 1000px;
++        height: 50px;
++        margin-left: 60px;
++
+     }
+ 
+-    /* 네비게이션 바 로고 스타일 */
+-    #mainNav .navbar-brand {
+-        color: #000;
+-        font-weight: 700;
+-        padding: 0.9rem 0;
++    #navi {
++        list-style-type: none;
++        padding: 0;
++        margin: 0;
++        height: 100%;
++
+     }
+-    /* 네비게이션 바 내 아이템 호버 스타일 */
+-    #mainNav .navbar-nav .nav-item:hover {
+-        color: fade(#fff, 80%); /* 텍스트 색상 변경 (투명도 조절) */
+-        outline: none;
+-        background-color: transparent;
++
++    #navi>li {
++        float: left;
++        width: 20%;
++        height: 100%;
++        text-align: center;
+     }
+-    /* 네비게이션 바 내 아이템 클릭 및 포커스 스타일 */
+-    #mainNav .navbar-nav .nav-item:active,
+-    #mainNav .navbar-nav .nav-item:focus {
+-        outline: none;
+-        background-color: transparent;
++
++    #navi a {
++        text-decoration: none;
++        color: white;
++        font-size: 1.5em;
++        font-weight: bold;
++        line-height: 38px;
++        height: 100%;
++        display: block;
+     }
+-    /* 미디어 쿼리 (화면 크기가 992px 이상인 경우) */
+-    @media (min-width: 992px) {
+-        /* 네비게이션 바 스타일 변경 */
+-        #mainNav {
+-            padding-top: 0;
+-            padding-bottom: 0;
+-            border-bottom: none;
+-            background-color: transparent; /* 배경색 변경 */
+-            transition: background-color 0.3s ease-in-out; /* 배경색 전환 효과 추가 */
+-        }
+-        /* 네비게이션 바 로고 스타일 변경 */
+-        #mainNav .navbar-brand {
+-            padding: 0.5rem 0;
+-            color: rgba(255, 255, 255, 0.5); /* 텍스트 색상 변경 (투명도 조절) */
+-        }
+-        /* 네비게이션 바 아이템 스타일 변경 */
+-        #mainNav .nav-link {
+-            transition: none;
+-            padding: 2rem 1.5rem;
+-            color: rgba(255, 255, 255, 0.5); /* 텍스트 색상 변경 (투명도 조절) */
+-        }
+-        /* 네비게이션 바 아이템 호버 스타일 변경 */
+-        #mainNav .nav-link:hover {
+-            color: rgba(255, 255, 255, 0.75); /* 호버 시 텍스트 색상 변경 */
+-        }
+-        /* 네비게이션 바 아이템 클릭 스타일 변경 */
+-        #mainNav .nav-link:active {
+-            color: #000000; /* 클릭 시 텍스트 색상 변경 */
+-        }
+-        /* 스크롤 시 네비게이션 바 스타일 변경 */
+-        #mainNav.navbar-shrink {
+-            background-color: #8D7B68; /* 스크롤 시 배경색 변경 */
+-            position: fixed; /* 화면 위에 고정된 위치에 표시 */
+-        }
+-        /* 스크롤 시 네비게이션 바 로고 스타일 변경 */
+-        #mainNav.navbar-shrink .navbar-brand {
+-            color: #000; /* 스크롤 시 텍스트 색상 변경 */
+-        }
+-        /* 스크롤 시 네비게이션 바 아이템 스타일 변경 */
+-        #mainNav.navbar-shrink .nav-link {
+-            color: #000; /* 스크롤 시 텍스트 색상 변경 */
+-            padding: 1.5rem 1.5rem 1.25rem;
+-            border-bottom: 0.25rem solid transparent;
+-        }
+-        /* 스크롤 시 네비게이션 바 아이템 호버 스타일 변경 */
+-        #mainNav.navbar-shrink .nav-link:hover {
+-            color: #ffffff; /* 호버 시 텍스트 색상 변경 */
+-        }
+-        /* 스크롤 시 네비게이션 바 아이템 클릭 스타일 변경 */
+-        #mainNav.navbar-shrink .nav-link:active {
+-            color: #ffffff; /* 클릭 시 텍스트 색상 변경 */
+-        }
+-        /* 스크롤 시 네비게이션 바 아이템 활성 스타일 변경 */
+-        #mainNav.navbar-shrink .nav-link.active {
+-            color: #ffffff;
+-            outline: none;
+-            border-bottom: 0.25rem solid #8D7B68;
+-        }
++
++    #navi a:hover{
++        color: black;
+     }
+-    /* 마스트헤드 스타일 */
+-    .masthead {
+-        position: relative;
+-        width: 100%;
+-        height: auto;
+-        min-height: 35rem;
+-        padding: 15rem 0;
+-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 90%, #000 100%), url('${path}/images/mainbanner1.png');
+-        background-position: center;
+-        background-repeat: no-repeat;
+-        background-size: cover;
++
++    #navi>li>ul {
++        list-style-type: none;
++        padding: 0;
++        display: none;
+     }
+-    /* 마스트헤드 제목 스타일 */
+-    .masthead h1, .masthead .h1 {
+-        font-family: "Varela Round", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+-        font-size: 2.5rem;
+-        line-height: 2.5rem;
+-        letter-spacing: 0.8rem;
+-        background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+-        -webkit-text-fill-color: transparent;
+-        -webkit-background-clip: text;
+-        background-clip: text;
++
++    #navi>li>a:hover+ul {
++        display: block;
+     }
+-    /* 마스트헤드 부제목 스타일 */
+-    .masthead h2, .masthead .h2 {
+-        max-width: 20rem;
+-        font-size: 1rem;
++
++    #navi>li>ul:hover {
++        display: block;
+     }
+-    /* 네비게이션 바 아이템 드롭다운 호버 스타일 */
+-    .nav-item.dropdown:hover .dropdown-menu {
+-        display: block; /* 드롭다운 메뉴 표시 */
++
++    #navi>li>ul a {
++        font-size: 1.0em;
++        color: #8D7B68;
+     }
+-    #mainNav .navbar-nav .nav-item a.nav-link {
+-        font-size: 20px; /* 여기에 원하는 글자 크기를 설정하세요. */
++    .bi bi-person-circle{
++        font-size: 30px;
++        line-height: 30px;
+     }
+ 
+ </style>
+-
+-<body style=" margin-top: 90px;">
+-<header style="justify-content: center; display: flex;  background-color: #8D7B68; position: fixed; width: 100%; z-index: 100">
+-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+-        <div class="container px-4 px-lg-5">
+-            <a class="navbar-brand" href="#page-top">
+-                <li class="nav-item" style=" list-style-type: none;">
+-                    <a class="nav-link" href="${ path }/">
+-                        <img id="logo" src="${path}/images/logowhite.png" style="width: 40px; cursor: pointer;">
+-                    </a>
+-                </li>
+-            </a>
+-
+-            <div class="collapse navbar-collapse" id="navbarResponsive" style="justify-content: left">
+-                <ul id="navi" class="navbar-nav ms-auto">
+-
+-                    <li class="nav-item dropdown"> <!-- INFO 메뉴 -->
+-                        <a class="nav-link dropdown-toggle" href="#" id="infoDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+-                            INFO
+-                        </a>
+-                        <ul class="dropdown-menu" aria-labelledby="infoDropdown">
+-                            <li><a class="dropdown-item" href="#">오시는길</a></li>
+-                            <li><a class="dropdown-item" href="#">좌석 정보</a></li>
+-                            <li><a class="dropdown-item" href="#">가격 정보</a></li>
+-                        </ul>
+-                    </li>
+-                    <li class="nav-item dropdown"> <!-- 예약 메뉴 -->
+-                        <a class="nav-link dropdown-toggle" href="#" id="reservationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+-                            예약
+-                        </a>
+-                        <ul class="dropdown-menu" aria-labelledby="reservationDropdown">
+-                            <li><a class="dropdown-item" href="#">좌석</a></li>
+-                            <li><a class="dropdown-item" href="#">사물함</a></li>
+-                            <li><a class="dropdown-item" href="#">이용권 구매</a></li>
+-                        </ul>
+-                    </li>
+-                    <li class="nav-item dropdown"> <!-- 커뮤니티 메뉴 -->
+-                        <a class="nav-link dropdown-toggle" href="#" id="communityDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+-                            커뮤니티
+-                        </a>
+-                        <ul class="dropdown-menu" aria-labelledby="communityDropdown">
+-                            <li><a class="dropdown-item" href="#">자유게시판</a></li>
+-                            <li><a class="dropdown-item" href="#">스터디 모임</a></li>
+-                            <li><a class="dropdown-item" href="#">공부법 공유</a></li>
+-                            <li><a class="dropdown-item" href="#">합격 후기</a></li>
+-                        </ul>
+-                    </li>
+-                    <li class="nav-item dropdown"> <!-- 고객센터 메뉴 -->
+-                        <a class="nav-link dropdown-toggle" href="#" id="customerServiceDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+-                            고객센터
+-                        </a>
+-                        <ul class="dropdown-menu" aria-labelledby="customerServiceDropdown">
+-                            <li><a class="dropdown-item" href="#">공지사항</a></li>
+-                            <li><a class="dropdown-item" href="#">자주 묻는 질문</a></li>
+-                            <li><a class="dropdown-item" href="#">문의하기</a></li>
+-                            <li><a class="dropdown-item" href="#">이벤트</a></li>
+-                        </ul>
+-                    </li>
+-                </ul>
+-            </div>
+-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+-            <div style="color: white; justify-content: end">
++<body>
++<header style="justify-content: center; display: flex;  background-color: #8D7B68" >
++    <table style="max-width: 1280px; min-width: 800px; width: 100%;">
++        <tr>
++            <td style="justify-content: end; display: flex; font-size: 20px; color: white;">
+                 <c:if test="${ empty loginMember }">
+-                <span id="login" style="cursor: pointer">
+-                    <i class="bi bi-person-circle"></i>
+-                </span>
++						<span id="login" style="cursor: pointer">
++							<i class="bi bi-person-circle"></i>
++						</span>
+                     &nbsp; | &nbsp;
+-                    <span id="signUp" style="cursor: pointer; font-size: 12px;">
+-                    회원가입
+-                </span>
++                        <span id="signUp" style="cursor: pointer; font-size: 12px;">
++							회원가입
++						</span>
+                 </c:if>
+                 <c:if test="${ not empty loginMember }">
+-                <span class="mobile-menu" id="myPage" style="cursor: pointer">
+-                    <i class="bi bi-person-vcard"></i>
+-                </span>
++					<span class="mobile-menu" id="myPage" style="cursor: pointer">
++							<i class="bi bi-person-vcard"></i>
++                    </span>
+                     &nbsp; | &nbsp;
+                     <span id="logout" style="cursor: pointer">
+-                    로그아웃
+-                </span>
++							로그아웃
++                    </span>
+                 </c:if>
+-            </div>
+-        </div>
+-    </nav>
++            </td>
++        </tr>
++        <tr>
++            <td>
++                <nav>
++                    <ul id="navi">
++                        <li>
++                            <a href="${ path }/">
++                                <img id="logo" src="${path}/images/logowhite.png"
++                                     style="width: 40px; cursor: pointer">
++                            </a>
++                        </li>
++                        <li><a href="#">INFO</a>
++                            <ul>
++                                <li><a href="">오시는길</a></li>
++                                <li><a href="">좌석 정보</a></li>
++                                <li><a href="">가격 정보</a></li>
++                            </ul>
++                        </li>
++                        <li><a href="#">예약</a>
++                            <ul>
++                                <li><a href="">좌석</a></li>
++                                <li><a href="">사물함</a></li>
++                                <li><a href="">이용권 구매</a></li>
++                            </ul>
++                        </li>
++                        <li><a href="#">커뮤니티</a>
++                            <ul>
++                                <li><a href="#">자유게시판</a></li>
++                                <li><a href="#">스터디 모임</a></li>
++                                <li><a href="#">공부법 공유</a></li>
++                                <li><a href="#">합격 후기</a></li>
++                            </ul>
++                        </li>
++                        <li><a href="#">고객센터</a>
++                            <ul>
++                                <li><a href="#">공지사항</a></li>
++                                <li><a href="#">자주 묻는 질문</a></li>
++                                <li><a href="#">문의하기</a></li>
++                                <li><a href="#">이벤트</a></li>
++                            </ul>
++                        </li>
++                    </ul>
++                </nav>
++            </td>
++
++        </tr>
++    </table>
+ </header>
+ 
+ <section>
+-
++    <%@ include file="/WEB-INF/views/common/modal/loginModal.jsp"%>
+ </section>
+ 
+ <script>
+-    window.addEventListener('DOMContentLoaded', event => {
+-        // Navbar shrink function
+-        var navbarShrink = function () {
+-            const navbarCollapsible = document.body.querySelector('#mainNav');
+-            if (!navbarCollapsible) {
+-                return;
+-            }
+-            if (window.scrollY === 0) {
+-                navbarCollapsible.classList.add('navbar-shrink')
+-            }
+-        };
+-        // Shrink the navbar
+-        navbarShrink();
+-        // Shrink the navbar when page is scrolled
+-        document.addEventListener('scroll', navbarShrink);
+-        // Activate Bootstrap scrollspy on the main nav element
+-        const mainNav = document.body.querySelector('#mainNav');
+-        if (mainNav) {
+-            new bootstrap.ScrollSpy(document.body, {
+-                target: '#mainNav',
+-                rootMargin: '0px 0px 40%',
+-            });
+-        };
+-        // Collapse responsive navbar when toggler is visible
+-        const navbarToggler = document.body.querySelector('.navbar-toggler');
+-        const responsiveNavItems = [].slice.call(
+-            document.querySelectorAll('#navbarResponsive .nav-link')
+-        );
+-        responsiveNavItems.map(function (responsiveNavItem) {
+-            responsiveNavItem.addEventListener('click', () => {
+-                if (window.getComputedStyle(navbarToggler).display !== 'none') {
+-                    navbarToggler.click();
+-                }
+-            });
++    $(document).ready(function() {
++        $("#login").click(function() {
++            $("#loginModal").modal("show");
+         });
+     });
+ </script>
+\ No newline at end of file

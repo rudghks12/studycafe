@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:c="http://www.springframework.org/schema/c"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:security="http://www.springframework.org/schema/security"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<bean id="bcryptPasswordEncoder"
+		  class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+	<bean id="userDetailsService" class="com.sss.studycafe.user.model.service.userDetailsService" />
+
+	<bean id="loginSuccessHandler" class="com.sss.studycafe.handler.LoginSuccessHandler"/>
+
+	<bean id="loginFailuerHandler" class="com.sss.studycafe.handler.LoginFailuerHandler" />
+
+
+	<security:http pattern="/js/**" security="none"/>
+	<security:http pattern="/css/**" security="none"/>
+	<security:http pattern="/images/**" security="none"/>
+	<security:http pattern="/enroll/**" security="none" />
+	<security:http pattern="/agree" security="none"/>
+	<security:http pattern="/checkEmailDuplicate" security="none" />
+	<security:http pattern="/checkNicknameDuplicate" security="none" />
+
+	<security:http auto-config="true" use-expressions="true">
+		<security:intercept-url pattern="/login" access="permitAll"/>
+
+		<security:intercept-url pattern="/user_find" access="permitAll()"/>
+		<security:intercept-url pattern="/admin/**" access="hasRole('ADMIN')"/>
+		<security:intercept-url pattern="/" access="permitAll"/>
+		<security:intercept-url pattern="/community/**" access="permitAll"/>
+		<security:intercept-url pattern="/comment/**" access="permitAll"/>
+		<security:intercept-url pattern="/info/**" access="permitAll"/>
+		<security:intercept-url pattern="/customer/**" access="permitAll"/>
+		<security:intercept-url pattern="/reservation/**" access="permitAll"/>
+
+<!--		<security:intercept-url pattern="/**" access="permitAll"/>-->
+		<security:intercept-url pattern="/enroll/**" access="permitAll" />
+		<security:intercept-url pattern="/enrollComplete" access="permitAll"/>
+		<security:intercept-url pattern="/checkEmailDuplicate" access="permitAll" />
+		<security:intercept-url pattern="/checkNicknameDuplicate" access="permitAll" />
+		<security:intercept-url pattern="/userSearch" access="permitAll" />
+		<security:intercept-url pattern="/findEmail" access="permitAll" />
+		<security:intercept-url pattern="/checkEmail" access="permitAll" />
+		<security:intercept-url pattern="/resetPassword" access="permitAll" />
+		<security:intercept-url pattern="/kakaoLogin" access="permitAll" />
+		<security:intercept-url pattern="/naverLogin" access="permitAll" />
+		<security:intercept-url pattern="/myPage/**" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/**" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/passwordChange" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/logout" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/secession" access="isAuthenticated()"/>
+		<security:intercept-url pattern="changeUserImage" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/checkTicket" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/checkIn" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/checkOut" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/payment/**" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/reservation/**" access="isAuthenticated()"/>
+		<security:form-login login-page="/"
+							 username-parameter="email"
+							 password-parameter="password"
+							 authentication-failure-handler-ref="loginFailuerHandler"
+							 authentication-success-handler-ref="loginSuccessHandler"
+		/>
+		<security:logout logout-url="/logout" logout-success-url="/" />
+
+		<security:remember-me key="studycafe" token-validity-seconds="1209600"/>
+
+		<security:session-management invalid-session-url="/">
+			<security:concurrency-control max-sessions="1" expired-url="/"/>
+		</security:session-management>
+		<security:csrf />
+	</security:http>
+
+	<security:authentication-manager>
+		<security:authentication-provider user-service-ref="userDetailsService">
+			<security:password-encoder ref="bcryptPasswordEncoder"/>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
